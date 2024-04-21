@@ -49,16 +49,18 @@ done < ./chi_employees.csv
 rm associations.apex > /dev/null 2>&1
 echo "box.Toolkit boxToolkit = new box.Toolkit();" > associations.apex
 
+newcount=0
 while IFS=, read -r caseID boxfolder; do
 
-    echo "List<Case> myCases = new List<Case>();" >> associations.apex
-    echo "myCases = [SELECT Case_ID__c FROM Case WHERE Case_ID__c = '$caseID'];" >> associations.apex
-    echo "for (Case i : myCases){" >> associations.apex
+    echo "List<Case> myCases$newcount = new List<Case>();" >> associations.apex
+    echo "myCases$newcount = [SELECT Case_ID__c FROM Case WHERE Case_ID__c = '$caseID'];" >> associations.apex
+    echo "for (Case i : myCases$newcount){" >> associations.apex
     echo "Id SFId = i.id;" >> associations.apex
     echo "string newboxID = '$boxfolder';" >> associations.apex
     echo "box__FRUP__c myNewFrup = boxToolkit.createFolderAssociation(SFId,newboxID);" >> associations.apex
     echo "system.debug('newly created frup id is:' + myNewFrup);" >> associations.apex
     echo "}" >> associations.apex
+    let newcount++
 
 done < ./associations.csv
 
